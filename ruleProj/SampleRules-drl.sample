@@ -1,0 +1,44 @@
+// Package must match folder names
+package rules.drools;
+
+// Every java object that will be used in the .drl file should be imported in the begining.
+import com.example.rules.model.Policy;
+
+// global variables - helps to pass input and output parameters
+global com.example.rules.model.Result result;
+global com.example.rules.model.OutputDisplay showResults;
+
+dialect  "mvel"
+
+query belongsTo(String x, String y)
+  Fact(x, y;)
+  or
+  (Fact(z, y;) and belongsTo(x, z;))
+end
+
+// Unique Rule name
+rule "SampleValidation"
+	// Condition
+	when
+		Policy(code != 0 && code not matches "^[0-9]{6}$")
+	// Action
+	then
+		throw new RuntimeException("Invalid Policy.");
+end;
+
+rule "Using a global query and global object"
+    when
+        belongsTo("abcd","xyz");
+    then
+        result.setValue("Decision one taken");
+        showResults.showResults(true);
+end;
+
+rule "Using a local rule and local object"
+    when
+        policy : Policy(experienceInYears > 10)
+        policy : Policy(currentSalary > 1000000 && currentSalary <= 2500000)
+    then
+        policy.setInboxService(50);
+        policy.setAudit("covered");
+end;

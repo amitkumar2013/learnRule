@@ -1,0 +1,14 @@
+package rules.drools;
+
+import com.example.rules.model.Policy;
+
+global com.example.rules.model.Result result;
+
+dialect "mvel"
+
+rule "SampleValidation"
+	when
+		policy: Policy( id > 4000);
+	then
+		result.setValue("Invalid Policy for id " + policy.id);
+end;
